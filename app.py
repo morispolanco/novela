@@ -54,9 +54,9 @@ def crear_epub(trama, titulo, estilo_escritura, numero_capitulos):
         book.add_item(capitulo)
 
     # Configurar tabla de contenidos
-    book.toc = (epub.Link('title.xhtml', 'Página de título', 'title'),
-                (epub.Section('Capítulos'),
-                 tuple(epub.Link(f'chapter_{i+1}.xhtml', f'Capítulo {i+1}')) for i in range(numero_capitulos)))
+    toc_items = [(epub.Section('Capítulos'),
+                  tuple(epub.Link(f'chapter_{i+1}.xhtml', f'Capítulo {i+1}'))) for i in range(numero_capitulos)]
+    book.toc = toc_items
 
     # Agregar tabla de contenidos y portada al libro
     book.add_item(epub.EpubNcx())
