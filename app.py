@@ -22,14 +22,14 @@ def crear_txt(trama, titulo, estilo_escritura, numero_capitulos):
     contenido_novela = ""
 
     # Crear contenido de la novela
-    contenido_novela += f"**Título:** {titulo}\n"
-    contenido_novela += f"**Escrito por:** GPT-Author\n"
-    contenido_novela += f"**Estilo de escritura:** {estilo_escritura}\n"
-    contenido_novela += f"**Trama:**\n{trama}\n"
+    contenido_novela += f"Título: {titulo}\n"
+    contenido_novela += f"Escrito por: GPT-Author\n"
+    contenido_novela += f"Estilo de escritura: {estilo_escritura}\n"
+    contenido_novela += f"Trama:\n{trama}\n"
 
     # Generar capítulos
     for i in range(numero_capitulos):
-        contenido_novela += f"\n**Capítulo {i+1}**\n"
+        contenido_novela += f"\nCapítulo {i+1}\n"
         if i == 0:
             contenido_novela += escribir_primer_capitulo(trama, titulo, estilo_escritura)
         else:
@@ -69,5 +69,12 @@ if st.button("Generar Novela"):
     st.markdown("### Trama:")
     st.write(trama_mejorada)
     crear_txt(trama_mejorada, titulo, estilo_escritura, numero_capitulos)
-    st.markdown("¡La novela ha sido generada! Puedes descargar el archivo TXT haciendo clic en el enlace a continuación:")
-    st.markdown("[Descargar TXT](output.txt)")
+    st.markdown("¡La novela ha sido generada! Haz clic en el enlace a continuación para descargar el archivo TXT:")
+    st.markdown(get_download_link("output.txt"), unsafe_allow_html=True)
+
+def get_download_link(file_path):
+    with open(file_path, "rb") as file:
+        contents = file.read()
+    encoded_file = base64.b64encode(contents).decode()
+    href = f'<a href="data:file/txt;base64,{encoded_file}" download="output.txt">Descargar TXT</a>'
+    return href
