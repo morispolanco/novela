@@ -1,37 +1,12 @@
-import streamlit as st
 import openai
 import os
 from ebooklib import epub
 import base64
 import requests
 
-st.title("gpt-author")
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+stability.api_key = os.environ.get("STABILITY_API_KEY")
 
-st.markdown("Por Matt Shumer ([https://twitter.com/mattshumer_](https://twitter.com/mattshumer_))")
-st.markdown("Repositorio en GitHub: [https://github.com/mshumer/gpt-author](https://github.com/mshumer/gpt-author)")
-st.markdown("Genera una novela completa en minutos y la empaqueta automáticamente como un libro electrónico.")
-
-st.markdown("Para generar un libro:")
-st.markdown("1. En la primera celda, añade tus claves de OpenAI y Stability (consulta la primera celda para obtenerlas).")
-st.markdown("2. Completa la descripción inicial, el número de capítulos y el estilo de escritura en la última celda.")
-st.markdown("3. ¡Ejecuta todas las celdas! Después de un tiempo, debería aparecer el archivo EPUB en el sistema de archivos.")
-
-st.markdown("---")
-
-st.markdown("# Configuración")
-st.code("""
-!pip install openai
-!pip install EbookLib
-
-import openai
-import os
-from ebooklib import epub
-import base64
-import requests
-
-openai.api_key = "INGRESA TU CLAVE DE OPENAI AQUÍ" # obtén la clave en https://platform.openai.com/
-stability_api_key = "INGRESA TU CLAVE DE STABILITY AQUÍ" # obtén la clave en https://beta.dreamstudio.ai/
-""")
 
 st.markdown("# Funciones")
 st.code("""
