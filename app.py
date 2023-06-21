@@ -36,8 +36,11 @@ def crear_txt(trama, titulo, estilo_escritura, numero_capitulos):
             contenido_novela += escribir_capitulo(trama, titulo, estilo_escritura, i+1)
 
     # Guardar contenido en un archivo TXT
-    with open("output.txt", "w", encoding="utf-8") as file:
+    file_path = "output.txt"
+    with open(file_path, "w", encoding="utf-8") as file:
         file.write(contenido_novela)
+
+    return file_path
 
 def escribir_primer_capitulo(trama, titulo, estilo_escritura):
     # Aquí puedes agregar tu lógica para escribir el primer capítulo
@@ -68,7 +71,6 @@ if st.button("Generar Novela"):
     st.write(titulo)
     st.markdown("### Trama:")
     st.write(trama_mejorada)
-    crear_txt(trama_mejorada, titulo, estilo_escritura, numero_capitulos)
+    file_path = crear_txt(trama_mejorada, titulo, estilo_escritura, numero_capitulos)
     st.markdown("¡La novela ha sido generada! Haz clic en el enlace a continuación para descargar el archivo TXT:")
-    st.markdown("[Descargar TXT](output.txt)")
-
+    st.markdown(f'<a href="data:file/txt;base64,{base64.b64encode(open(file_path, "rb").read()).decode()}" download="output.txt">Descargar TXT</a>', unsafe_allow_html=True)
