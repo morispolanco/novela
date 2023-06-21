@@ -1,144 +1,23 @@
-import openai
-import os
-from ebooklib import epub
+import streamlit as st
 import base64
-import requests
+import epub
 
-openai.api_key = os.environ.get("OPENAI_API_KEY")
-stability.api_key = os.environ.get("STABILITY_API_KEY")
-
-
-st.markdown("# Funciones")
-st.code("""
-def generar_prompt_portada(argumento):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-16k",
-        messages=[
-            {"role": "system", "content": "Eres un asistente creativo que escribe una especificación para la portada de un libro, basada en la trama del libro."},
-            {"role": "user", "content": f"Trama: {argumento}\n\n--\n\nDescribe la portada que deberíamos crear, basada en la trama. Esto debe tener como máximo dos frases."}
-        ]
-    )
-    return response['choices'][0]['message']['content']
-
-def crear_imagen_portada(argumento):
-    argumento = str(generar_prompt_portada(argumento))
-    engine_id = "stable-diffusion-xl-beta-v2-2-2"
-    api_host = os.getenv('API_HOST', 'https://api.stability.ai')
-    api_key = stability_api_key
-
-    if api_key is None:
-        raise Exception("Falta la clave de la API de Stability.")
-
-    response = requests.post(
-        f"{api_host}/v1/generation/{engine_id}/text-to-image",
-        headers={
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": f"Bearer {api_key}"
-        },
-        json={
-            "text_prompts": [
-                {
-                    "text": argumento
-                }
-            ],
-            "cfg_scale": 7,
-            "clip_guidance_preset": "FAST_BLUE",
-            "height": 768,
-            "width": 512,
-            "samples": 1,
-            "steps": 30,
-        },
-    )
-
-    if response.status_code != 200:
-        raise Exception("Respuesta no válida: " + str(response.text))
-
-    data = response.json()
-    imagen_base64 = data['image']
-    return imagen_base64
-
-def generar_trama(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-4.0-turbo",
-        messages=[
-            {"role": "system", "content": "Tú eres un asistente creativo que ayuda a escribir novelas. Tienes que generar una trama para una novela basada en la siguiente descripción:"},
-            {"role": "user", "content": f"{prompt}\n\n--\n\nGenera una trama interesante para esta novela."}
-        ]
-    )
-    return response['choices'][0]['message']['content']
-
-def seleccionar_trama_mas_apasionante(tramas):
-    scores = []
-    for trama in tramas:
-        response = openai.Completion.create(
-            engine="davinci",
-            prompt=f"Este libro es una novela {trama}.",
-            temperature=0.3,
-            max_tokens=10,
-            n = 10,
-            stop=None,
-            log_level="info"
-        )
-        scores.append((trama, response['choices'][0]['logprobs']['token_logprobs'][0][0]))
-    scores.sort(key=lambda x: x[1], reverse=True)
-    return scores[0][0]
+def generar_trama(descripcion):
+    # Aquí puedes agregar tu lógica para generar la trama de la novela
+    # basada en la descripción inicial proporcionada.
+    trama_generada = "Aquí va la trama generada..."
+    return trama_generada
 
 def mejorar_trama(trama):
-    response = openai.ChatCompletion.create(
-        model="gpt-4.0-turbo",
-        messages=[
-            {"role": "system", "content": "Tú eres un asistente creativo que ayuda a escribir novelas. Tienes que mejorar la siguiente trama:"},
-            {"role": "user", "content": f"{trama}\n\n--\n\nMejora esta trama para hacerla más interesante."}
-        ]
-    )
-    return response['choices'][0]['message']['content']
+    # Aquí puedes agregar tu lógica para mejorar la trama generada,
+    # por ejemplo, corrigiendo errores gramaticales o haciendo ajustes.
+    trama_mejorada = "Aquí va la trama mejorada..."
+    return trama_mejorada
 
 def obtener_titulo(trama):
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=f"La trama de esta novela es: {trama}.",
-        temperature=0.3,
-        max_tokens=5,
-        n = 5,
-        stop=None,
-        log_level="info"
-    )
-    return response['choices'][0]['text']
-
-def escribir_primer_capitulo(trama, titulo, estilo_escritura):
-    prompt = f"Trama: {trama}\n\nTítulo: {titulo}\n\nEstilo de escritura: {estilo_escritura}\n\nEmpieza a escribir el primer capítulo de la novela:"
-
-    response = openai.Completion.create(
-        model="gpt-4.0-turbo",
-        messages=[
-            {"role": "system", "content": "Tú eres un asistente creativo que ayuda a escribir novelas. Tienes que escribir el primer capítulo de una novela basada en la siguiente información:"},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=4096,
-        n = 1,
-        stop=None,
-        log_level="info"
-    )
-
-    return response['choices'][0]['message']['content']
-
-def escribir_capitulo(trama, titulo, estilo_escritura, numero_capitulo):
-    prompt = f"Trama: {trama}\n\nTítulo: {titulo}\n\nEstilo de escritura: {estilo_escritura}\n\nEmpieza a escribir el capítulo {numero_capitulo} de la novela:"
-
-    response = openai.Completion.create(
-        model="gpt-4.0-turbo",
-        messages=[
-            {"role": "system", "content": "Tú eres un asistente creativo que ayuda a escribir novelas. Tienes que escribir el siguiente capítulo de una novela basada en la siguiente información:"},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=4096,
-        n = 1,
-        stop=None,
-        log_level="info"
-    )
-
-    return response['choices'][0]['message']['content']
+    # Aquí puedes agregar tu lógica para obtener un título basado en la trama.
+    titulo = "Título de la Novela"
+    return titulo
 
 def crear_epub(trama, titulo, estilo_escritura, numero_capitulos):
     book = epub.EpubBook()
@@ -185,17 +64,37 @@ def crear_epub(trama, titulo, estilo_escritura, numero_capitulos):
 
     # Ordenar los ítems y escribir el EPUB
     book.spine = ['nav'] + [title_page] + [epub.EpubHtml(title=f'Capítulo {i+1}', file_name=f'chapter_{i+1}.xhtml', lang='es') for i in range(numero_capitulos)]
-    epub.write_epub('output.epub', book)
+    epub.write_epub('output.epub', book, {})
 
-st.markdown("# Generar Libro")
-st.markdown("Completa la siguiente información para generar el libro:")
+def crear_imagen_portada(trama):
+    # Aquí puedes agregar tu lógica para generar una imagen de portada
+    # basada en la trama.
+    # Devuelve la representación en base64 de la imagen generada.
+    imagen_base64 = "Aquí va la imagen de portada en base64"
+    return imagen_base64
 
-descripcion_inicial = st.text_area("Descripción Inicial", height=100)
-numero_capitulos = st.number_input("Número de Capítulos", min_value=1, max_value=100, value=10, step=1)
-estilo_escritura = st.text_input("Estilo de Escritura")
+def escribir_primer_capitulo(trama, titulo, estilo_escritura):
+    # Aquí puedes agregar tu lógica para escribir el primer capítulo
+    # de la novela basado en la trama, título y estilo de escritura.
+    capitulo = "Aquí va el contenido del primer capítulo"
+    return capitulo
 
-if st.button("Generar Libro"):
-    st.markdown("Generando libro...")
+def escribir_capitulo(trama, titulo, estilo_escritura, numero_capitulo):
+    # Aquí puedes agregar tu lógica para escribir los capítulos
+    # posteriores de la novela basados en la trama, título, estilo
+    # de escritura y número de capítulo.
+    capitulo = f"Aquí va el contenido del capítulo {numero_capitulo}"
+    return capitulo
+
+# Interfaz de usuario
+st.title("Generador de Novelas")
+
+descripcion_inicial = st.text_input("Ingresa una descripción inicial para tu novela:")
+estilo_escritura = st.selectbox("Selecciona un estilo de escritura:", ["Romántico", "Suspenso", "Fantasía"])
+numero_capitulos = st.number_input("Ingresa el número de capítulos:", min_value=1, step=1)
+
+if st.button("Generar Novela"):
+    st.markdown("Generando novela...")
     trama = generar_trama(descripcion_inicial)
     trama_mejorada = mejorar_trama(trama)
     titulo = obtener_titulo(trama_mejorada)
@@ -204,5 +103,5 @@ if st.button("Generar Libro"):
     st.markdown("### Trama:")
     st.write(trama_mejorada)
     crear_epub(trama_mejorada, titulo, estilo_escritura, numero_capitulos)
-    st.markdown("¡El libro ha sido generado! Puedes descargar el archivo EPUB haciendo clic en el enlace a continuación:")
+    st.markdown("¡La novela ha sido generada! Puedes descargar el archivo EPUB haciendo clic en el enlace a continuación:")
     st.markdown("[Descargar EPUB](output.epub)")
