@@ -1,6 +1,5 @@
 import streamlit as st
 import base64
-import epub
 
 def generar_trama(descripcion):
     # Aquí puedes agregar tu lógica para generar la trama de la novela
@@ -19,59 +18,26 @@ def obtener_titulo(trama):
     titulo = "Título de la Novela"
     return titulo
 
-def crear_epub(trama, titulo, estilo_escritura, numero_capitulos):
-    book = epub.EpubBook()
+def crear_txt(trama, titulo, estilo_escritura, numero_capitulos):
+    contenido_novela = ""
 
-    # Configurar metadatos
-    book.set_identifier("gpt-author")
-    book.set_title(titulo)
-    book.set_language("es")
-
-    # Crear la portada
-    portada_imagen_base64 = crear_imagen_portada(trama)
-    portada_imagen_base64_bytes = base64.b64decode(portada_imagen_base64)
-    with open("portada.png", "wb") as file:
-        file.write(portada_imagen_base64_bytes)
-    book.set_cover("cover.png", open("portada.png", "rb").read())
-
-    # Crear la página de título
-    title_page = epub.EpubHtml(title='Página de título', file_name='title.xhtml', lang='es')
-    title_page.content = f'''
-    <h1>{titulo}</h1>
-    <p>Escrito por: GPT-Author</p>
-    <p>Estilo de escritura: {estilo_escritura}</p>
-    <p>Trama: {trama}</p>
-    '''
-    book.add_item(title_page)
+    # Crear contenido de la novela
+    contenido_novela += f"**Título:** {titulo}\n"
+    contenido_novela += f"**Escrito por:** GPT-Author\n"
+    contenido_novela += f"**Estilo de escritura:** {estilo_escritura}\n"
+    contenido_novela += f"**Trama:**\n{trama}\n"
 
     # Generar capítulos
     for i in range(numero_capitulos):
-        capitulo = epub.EpubHtml(title=f'Capítulo {i+1}', file_name=f'chapter_{i+1}.xhtml', lang='es')
+        contenido_novela += f"\n**Capítulo {i+1}**\n"
         if i == 0:
-            capitulo.content = escribir_primer_capitulo(trama, titulo, estilo_escritura)
+            contenido_novela += escribir_primer_capitulo(trama, titulo, estilo_escritura)
         else:
-            capitulo.content = escribir_capitulo(trama, titulo, estilo_escritura, i+1)
-        book.add_item(capitulo)
+            contenido_novela += escribir_capitulo(trama, titulo, estilo_escritura, i+1)
 
-    # Configurar tabla de contenidos
-    toc_items = [(epub.Section('Capítulos'),
-                  tuple(epub.Link(f'chapter_{i+1}.xhtml', f'Capítulo {i+1}'))) for i in range(numero_capitulos)]
-    book.toc = toc_items
-
-    # Agregar tabla de contenidos y portada al libro
-    book.add_item(epub.EpubNcx())
-    book.add_item(epub.EpubNav())
-
-    # Ordenar los ítems y escribir el EPUB
-    book.spine = ['nav'] + [title_page] + [epub.EpubHtml(title=f'Capítulo {i+1}', file_name=f'chapter_{i+1}.xhtml', lang='es') for i in range(numero_capitulos)]
-    epub.write_epub('output.epub', book, {})
-
-def crear_imagen_portada(trama):
-    # Aquí puedes agregar tu lógica para generar una imagen de portada
-    # basada en la trama.
-    # Devuelve la representación en base64 de la imagen generada.
-    imagen_base64 = "Aquí va la imagen de portada en base64"
-    return imagen_base64
+    # Guardar contenido en un archivo TXT
+    with open("output.txt", "w", encoding="utf-8") as file:
+        file.write(contenido_novela)
 
 def escribir_primer_capitulo(trama, titulo, estilo_escritura):
     # Aquí puedes agregar tu lógica para escribir el primer capítulo
@@ -102,6 +68,6 @@ if st.button("Generar Novela"):
     st.write(titulo)
     st.markdown("### Trama:")
     st.write(trama_mejorada)
-    crear_epub(trama_mejorada, titulo, estilo_escritura, numero_capitulos)
-    st.markdown("¡La novela ha sido generada! Puedes descargar el archivo EPUB haciendo clic en el enlace a continuación:")
-    st.markdown("[Descargar EPUB](output.epub)")
+    crear_txt(trama_mejorada, titulo, estilo_escritura, numero_capitulos)
+    st.markdown("¡La novela ha sido generada! Puedes descargar el archivo TXT haciendo clic en el enlace a continuación:")
+    st.markdown("[Descargar TXT](output.txt)")
