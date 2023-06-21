@@ -70,11 +70,5 @@ if st.button("Generar Novela"):
     st.write(trama_mejorada)
     crear_txt(trama_mejorada, titulo, estilo_escritura, numero_capitulos)
     st.markdown("¡La novela ha sido generada! Haz clic en el enlace a continuación para descargar el archivo TXT:")
-    st.markdown(get_download_link("output.txt"), unsafe_allow_html=True)
+    st.markdown("[Descargar TXT](output.txt)")
 
-def get_download_link(file_path):
-    with open(file_path, "rb") as file:
-        contents = file.read()
-    encoded_file = base64.b64encode(contents).decode()
-    href = f'<a href="data:file/txt;base64,{encoded_file}" download="output.txt">Descargar TXT</a>'
-    return href
